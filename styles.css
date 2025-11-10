@@ -1,0 +1,199 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  color: black;
+  background-color: rgb(0, 0, 0);
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  gap: 0.5rem;
+  border-bottom: solid 1px #aaa;
+  background-color: #eee;
+}
+
+/* Home */
+nav a {
+  color: #007bff;
+  text-decoration: none;
+  margin-right: 1rem;
+}
+
+nav a.active {
+  color: rgb(255, 255, 255);
+  background-color: #007bff;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+main {
+  padding: 1rem;
+}
+
+h2 {
+  font-size: 1.1rem;
+}
+
+
+/* --- PROPIEDADES COMUNES --- */
+.letra-pixeles {
+  font-weight: bold;
+  color: whitesmoke;
+  /* El text-shadow pixelado es idéntico en los 3 */
+  text-shadow: 1px 0.5px #000000, /* Píxel de sombra  */ 2px 1px #a0a41d,
+    2px 2px #a0a41d;
+  font-family: 'Pixelify Sans', sans-serif;
+  font-optical-sizing: auto;
+}
+
+/* --- PROPIEDADES ESPECÍFICAS (Diferentes tamaños y alineación) --- */
+
+h1 {
+  font-size: 2.5rem;
+  text-align: center; /* Solo H1 está centrado */
+}
+
+/* --- PROPIEDADES Batalla.html --- */
+
+.card {
+  text-align: center; /* Centra todo el texto dentro de la tarjeta en  */
+}
+
+/* Estilo del contenedor del avatar (define el área visible y el círculo) */
+.avatar-container {
+  width: 180px; /* Define el tamaño del círculo */
+  height: 180px;
+  margin: 20px auto 10px auto; /* Centra el contenedor horizontalmente y añade márgenes */
+  border-radius: 50%;
+  overflow: hidden; /* Oculta cualquier parte de la imagen que se salga del círculo */
+  border: 3px solid #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/*  Estilo de la imagen dentro del contenedor (asegura que llene el espacio) */
+.jugador-avatar {
+  width: 100%; /* La imagen ocupa el 100% del ancho del contenedor */
+  height: 100%; /* La imagen ocupa el 100% del alto del contenedor */
+  object-fit: cover; /* Ajusta la imagen para cubrir el espacio sin distorsionarse */
+}
+
+/* img {
+  max-width: 100%;
+  height: auto;
+} */
+
+#dado-imagen {
+  display: block;
+  margin: 1rem auto;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Selector corregido para la clase card-title  en batalla.html*/
+.card-title {
+  font-size: 1.1rem;
+}
+
+/* -----Estilos de Portada/HOME-------- */
+.inicio-seccion h3 {
+  /* Si no necesitas un tamaño diferente aquí, puedes quitar este bloque */
+  font-size: 1.2rem;
+}
+
+/* 1. Asegura que el HTML y BODY ocupen toda la pantalla */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Evita barras de desplazamiento horizontales accidentales */
+}
+
+/* 2. El contenedor principal ocupa toda la altura visible */
+.full-height-container {
+  min-height: 80vh; /* Ocupa el 100% de la altura de la ventana del navegador */
+  display: flex; /* Ayuda a alinear el contenido */
+  align-items: center; /* Centra verticalmente el row dentro del container */
+}
+
+/* 3. La fila (row) se expande dentro del contenedor */
+.full-height-row {
+  width: 100%;
+  margin: 0; /* Elimina margenes predeterminados de bootstrap */
+}
+
+/* 4. Las columnas (donde están las imágenes) */
+.inicio-seccion {
+  min-height: 450px; /* definir una altura fija para estas secciones para que background-size cover funcione bien */
+  background-size: cover;
+  background-position: center;
+  color: white;
+  padding: 20px;
+  margin: 5px 0;
+  /*añade una transición suave al pasar el mouse */
+  transition: transform 0.3s ease;
+  background-size: cover;
+}
+
+/* Efecto al pasar el mouse para que parezca interactivo */
+.inicio-seccion:hover {
+  transform: scale(1.02);
+  cursor: pointer;
+}
+
+.seccion-dados-portada {
+  /* Mantenemos la altura del contenedor igual que las otras secciones */
+  min-height: 250px;
+
+  /* ***** ESTILOS ESPECÍFICOS PARA ACHICAR LA IMAGEN ***** */
+  background-size: contain; /* 'contain' achica la imagen para que quepa completamente dentro del contenedor sin recortarse */
+  background-repeat: no-repeat; /* Evita que la imagen se repita */
+  background-position: center; /* Centra la imagen achicada */
+  /* ****************************************************** */
+}
+.seccion-dados-portada {
+  min-height: 250px;
+  padding: 80px;
+}
+.tamanio-avatar-portada {
+  width: 200px;
+  margin: 30px auto;
+}
+
+/* imagen de fondo de  portada */
+
+.hero-bg-image {
+  background-image: url('assets/dadoHome.png');
+  background-size: cover; /* Cubre todo el div */
+  background-position: center; /* Centra la imagen */
+  color: white; /* Asegura que el texto sea visible */
+  height: 400px; /* Define una altura adecuada */
+}
+
+/* .disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+ */
+.container-fluid {
+  display: flex; /* Asegura que los elementos usen Flexbox */
+  justify-content: space-between; /* Distribuye el espacio uniformemente entre los 3 elementos */
+  align-items: center; /* Centra verticalmente los elementos */
+}
+.cerrarSesionBtn {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  gap: 0.5rem;
+  border-bottom: solid 1px #aaa;
+}
