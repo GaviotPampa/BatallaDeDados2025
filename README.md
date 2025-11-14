@@ -173,6 +173,23 @@ El botón "Cerrar sesión":
 
 ---
 
+## 📸 Capturas del juego
+
+### 🏁 Pantalla de Inicio
+<img src="assets/imgsReadme/inicio.jpeg" width="650">
+
+---
+
+### ⚔️ Pantalla de Batalla
+<img src="assets/imgsReadme/campoBatalla.jpeg" width="650">
+
+---
+
+### 🎲 Partida Finalizada
+<img src="assets/imgsReadme/partidaTerminada.jpeg" width="300">
+
+---
+
 # 🛠 **Tecnologías Usadas**
 
 * JavaScript ES6 (clases, módulos)
