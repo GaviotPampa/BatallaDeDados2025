@@ -7,7 +7,6 @@ class Partida {
     this.jugador1 = j1;
     this.jugador2 = j2;
 
-
     this.turno = 1; // 1 = jugador1 / 2 = jugador2
     this.objetivo = 5; //  para ganar LA PARTIDA 5 rondas GANADAS
     this.terminada = false; // <- importante
