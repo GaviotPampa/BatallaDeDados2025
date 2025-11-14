@@ -185,6 +185,17 @@ El botón "Cerrar sesión":
 
 ---
 
+### 🎰 Inicio de Partida
+<img src="assets/imgsReadme/lanzandoPrimerTurno.jpeg" width="650">
+
+---
+
+### 🎰 Lanza segundo Jugador
+<img src="assets/imgsReadme/lanzandoSegundoTurno.jpeg" width="650">
+
+---
+
+
 ### 🎲 Partida Finalizada
 <img src="assets/imgsReadme/partidaTerminada.jpeg" width="300">
 
