@@ -14,7 +14,7 @@ class Dado {
 
     // Método para lanzar el dado y obtener un resultado aleatorio
     lanzar() {
-        const resultado = Math.floor(Math.random() * 6)+1; // Generamos un número aleatorio entre 0 y 5
+        const resultado = Math.floor(Math.random() * 6) + 1; // Generamos un número aleatorio entre 0 y 5
         return resultado ; // Retornamos el número entre 1 y 6
     }
 

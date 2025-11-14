@@ -2,10 +2,33 @@ import Jugador from "./classes/jugador.js";
 import Partida from "./classes/partida.js";
 import Dado from "./classes/dado.js";
 
-// Obtenemos   elementos del DOM
-const mensajeTurno = document.getElementById("mensajeTurno");
+let partida = null;
+//let sesionActiva = localStorage.getItem("sesionActiva") === "true";
 
-//let turno = 1; // 1 para jugador 1, 2 para jugador 2
+// =========================
+// BLOQUE DE control GLOBAL
+// =========================
+const estoyEnIndex = window.location.pathname.includes("index.html");
+
+// Si estoy en INDEX y no hay jugadores → deshabilitar enlace
+if (estoyEnIndex) {
+    const existeNombre1 = localStorage.getItem("nombreJ1");
+    const existeNombre2 = localStorage.getItem("nombreJ2");
+
+    const enlaceBatalla = document.getElementById("enlace-volverBatalla");
+    if (enlaceBatalla) {
+        if (!existeNombre1 || !existeNombre2) {
+            enlaceBatalla.classList.add("disabled");
+            enlaceBatalla.style.pointerEvents = "none";
+            enlaceBatalla.style.opacity = "0.5";
+            enlaceBatalla.setAttribute("aria-disabled", "true");
+            console.log(" Enlace Volver a jugar deshabilitado: no hay jugadores cargados");
+        } else {
+            console.log("✔ Enlace habilitado: jugadores encontrados");
+        }
+    }
+
+}
 
 // =====================
 // LOCALSTORAGE
@@ -13,6 +36,15 @@ const mensajeTurno = document.getElementById("mensajeTurno");
 const CLAVE = "batalla-dados-estado";
 
 export function guardarEstado(partida) {
+    //console.log("Intentando guardar estado...", partida, sesionActiva);
+
+   /* if (!sesionActiva){
+     console.log(" No se guarda porque la sesión está cerrada");
+     return;  */// si se cerró sesión, no guardes
+  // }
+     console.log(" Guardando estado correctamente");
+
+  if (!partida || partida.terminada) return; // si no hay partida o ya terminó, no guardar
   const datos = {
     jugador1: partida.jugador1,
     jugador2: partida.jugador2,
@@ -22,7 +54,7 @@ export function guardarEstado(partida) {
   };
   localStorage.setItem(CLAVE, JSON.stringify(datos));
 }
-
+//recuperar de localStoragela partida guardada
 function cargarEstado() {
   const json = localStorage.getItem(CLAVE);
   if (!json) return null;
@@ -52,58 +84,79 @@ function cargarEstado() {
   return partida;
 }
 
+
 // =====================
-//     UI
+//     BATALLA html
 // =====================
-export function mostrarMensaje(texto) {
-  const el = document.getElementById("mensaje-ronda");
-  if (el) {
-    el.textContent = texto;
-  } else {
-    console.log(texto);
-  }
-}
 
 function actualizarPantalla(partida) {
-  // nombres
-  const nj1 = document.getElementById("nombre-j1");
-  const nj2 = document.getElementById("nombre-j2");
-  if (nj1) nj1.textContent = partida.jugador1.nombre;
-  if (nj2) nj2.textContent = partida.jugador2.nombre;
+ 
+  //  --CARD jugador 1---
+  const nj1 = document.getElementById("nombre-j1"); // nombre
+  const pj1 = document.getElementById("puntos-j1");  // VALOR DEL DADO
+  const rj1 = document.getElementById("rondas-j1"); // RONDA
+ // Mostrar las tiradas de cada jugador
+  const tJ1 = document.getElementById("tiradas-j1");
 
-  // jugador 1
-  const pj1 = document.getElementById("puntos-j1");
-  const rj1 = document.getElementById("rondas-j1");
+  if (nj1) nj1.textContent = partida.jugador1.nombre;
   if (pj1) pj1.textContent = partida.jugador1.puntos;
   if (rj1) rj1.textContent = partida.jugador1.rondasGanadas;
+  //if (tJ1) tJ1.textContent = partida.jugador1.tiradas;
+  //if (tJ1) tJ1.textContent = `🎲 : ${partida.jugador1.tiradas.join(", ") || "–"}`;
 
   const puntosTotalesJ1 = document.getElementById("totalJugador1");
   if (puntosTotalesJ1)
     puntosTotalesJ1.textContent = `Puntos totales de partida: ${partida.jugador1.totalPuntos}`;
+  
+  // ⭐ mostrar estrellas (uno por ronda)
+  const sj1 = document.getElementById("stars-j1");
+  if (sj1) sj1.textContent = "⭐".repeat(partida.jugador1.rondasGanadas);
 
-  // jugador 2
+  // ----CARD jugador 2-----
+  const nj2 = document.getElementById("nombre-j2");
   const pj2 = document.getElementById("puntos-j2");
   const rj2 = document.getElementById("rondas-j2");
+  const tj2 = document.getElementById("tiradas-j2");
 
+  if (nj2) nj2.textContent = partida.jugador2.nombre;
   if (pj2) pj2.textContent = partida.jugador2.puntos;
-
   if (rj2) rj2.textContent = partida.jugador2.rondasGanadas;
+  //if (tj2) tj2.textContent = partida.jugador2.tiradas;
 
   const puntosTotalesJ2 = document.getElementById("totalJugador2");
   if (puntosTotalesJ2)
     puntosTotalesJ2.textContent = `Puntos totales de partida: ${partida.jugador2.totalPuntos}`;
 
-  // ⭐ mostrar estrellas (uno por ronda)
-  const sj1 = document.getElementById("stars-j1");
   const sj2 = document.getElementById("stars-j2");
-
-  if (sj1) sj1.textContent = "⭐".repeat(partida.jugador1.rondasGanadas);
   if (sj2) sj2.textContent = "⭐".repeat(partida.jugador2.rondasGanadas);
-
-  //  actualizar historial en pantalla
-  actualizarHistorial(partida);
+   
+  if (tJ1 && pj1) {
+  if (partida.jugador1.tiradas.length > 0) {
+    const numTiradaJ1 = partida.jugador1.tiradas.length;
+    const ultimaJ1 = partida.jugador1.tiradas[numTiradaJ1 - 1];
+    tJ1.textContent = `🪁  ${numTiradaJ1} `;
+    pj1.textContent = `🎲 : ${ultimaJ1}`;
+  } else {
+    tJ1.textContent = "🎲 Aún no tiró.";
+  }
 }
 
+if (tj2 && pj2) {
+  if (partida.jugador2.tiradas.length > 0) {
+    const numTiradaJ2 = partida.jugador2.tiradas.length;
+    const ultimaJ2 = partida.jugador2.tiradas[numTiradaJ2 - 1];
+    tj2.textContent = `🪁   ${numTiradaJ2}`;
+    pj2.textContent = `🎲  : ${ultimaJ2}`;
+  } else {
+    tj2.textContent = "🎲 Aún no tiró.";
+  }
+}
+  //  actualizar historial en pantalla
+  actualizarHistorial(partida);
+
+}
+
+  // ------HISTORIAL DE RONDAS-------
 function actualizarHistorial(partida) {
   const lista = document.getElementById("lista-historial");
   if (!lista) return;
@@ -111,7 +164,7 @@ function actualizarHistorial(partida) {
   lista.innerHTML = ""; // limpio para no duplicar
 
   // Si no hay historial, muestro mensaje
-  if (!Array.isArray(partida.historial) || partida.historial.length === 0) {
+  if (!Array.isArray(partida.historial) || partida.historial.length === 1) {
     const li = document.createElement("li");
     li.classList.add("list-group-item");
     li.textContent = "Aún no hay rondas jugadas.";
@@ -135,14 +188,28 @@ function actualizarHistorial(partida) {
   });
 }
 
-// =====================
-// UN SOLO DOMContentLoaded
-// =====================
-document.addEventListener("DOMContentLoaded", function () {
-  //instanciar dado para usarlo en la partida
-  const dado = new Dado("dado-imagen");
+// --MOSTRAR MSJS EN BATALLA
+export function mostrarMensaje(texto) {
+  const el = document.getElementById("mensaje-ronda");
+  if (el) {
+    el.textContent = texto;
+  /*   setTimeout(() => {
+  el.style.display = "none";
+},3000); */
+  } else {
+    console.log(texto);
+  }
+}
 
-  // 1) si estoy en la página de inicio (index.html) y hay form
+// =====================
+//      MAIN
+// =====================
+
+document.addEventListener("DOMContentLoaded", function () {
+
+
+///=======INICIO LOGICA FORMULARIO===========/
+   // 1) si estoy en la página de inicio (index.html) y hay form
   const form = document.getElementById("form-jugadores");
   if (form) {
     //codigo submit de formulario
@@ -160,6 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const j1 = new Jugador(n1);
       const j2 = new Jugador(n2);
       const partida = new Partida(j1, j2);
+
       guardarEstado(partida);
 
       localStorage.setItem("nombreJ1", n1);
@@ -171,13 +239,29 @@ document.addEventListener("DOMContentLoaded", function () {
     // no sigo, porque en index no hay dado
     return;
   }
+  ///=======FIN  LOGICA  FORMULARIO================/
 
-  // 2) si estoy en batalla.html (hay dado)
-  const imagenDado = document.getElementById("dado-imagen");
 
-  if (!imagenDado) return;
+///=======INICIO  LOGICA  BOTON TIRAR==========/
+//botón “Lanzar”  ejecuta este recorrido: 
+// FLUJO: app.js → partida.tirar() → dado.lanzar()
 
-  let partida = cargarEstado();
+// Obtenemos  elementos del DOM-deben ir adentro de lDOMContentLoaded , ya que estos elementos todavía no existen en el HTML cuando se carga el script.
+
+//instanciar dado para usarlo en la partida
+const dado = new Dado("dado-imagen");
+// si estoy en batalla.html (hay dado)
+const imagenDado = document.getElementById("dado-imagen");
+const btnLanzar = document.getElementById("boton-tirar");
+const resultado = document.getElementById("resultado-ronda");
+const contador = document.getElementById("contador-tiradas");
+const mensajeTurno = document.getElementById("mensajeTurno");
+
+ let contadorTiradas = 0;
+
+ //buscamos recuperar la partida guardada
+  partida = cargarEstado();
+  
   if (!partida) {
     const nombre1 = localStorage.getItem("nombreJ1") || "Jugador 1";
     const nombre2 = localStorage.getItem("nombreJ2") || "Jugador 2";
@@ -189,82 +273,55 @@ document.addEventListener("DOMContentLoaded", function () {
     guardarEstado(partida);
   }
 
-  mensajeTurno.textContent = `Turno de ${partida.jugador1.nombre}`;
-  //console.log(mensajeTurno.textContent);
-
+  //inicializar pantalla
   actualizarPantalla(partida);
+  actualizarHistorial(partida);
+/*   if (mensajeTurno)mensajeTurno.textContent = `Turno de ${partida.jugador1.nombre}`;
+ */
+if(btnLanzar){
+btnLanzar.addEventListener("click", () => {
 
-  /****logica del boton para lanzar el dado  y todas las res al lanzar cada tirada***/
-
-  let contadorTiradas = 0;
-  let contadorTiradasJ1 = 0;
-  let contadorTiradasJ2 = 0;
-
-  const contadorJ1 = document.getElementById("tiradas-j1");
-  const contadorJ2 = document.getElementById("tiradas-j2");
-  const resultadoRonda = document.getElementById("resultado-ronda");
-  const contador = document.getElementById("contador-tiradas");
-
-  const boton = document.getElementById("boton-tirar");
-  if (boton) {
-    boton.addEventListener("click", function () {
-      // si ya terminó, no dejo seguir
+   // si ya terminó, no dejo seguir
       if (partida.terminada) {
+        mostrarMensaje("La partida ya terminó 🔚");
         return;
       }
 
-      const resultado = partida.tirar(dado); //tira una vez
-      //console.log("mostrar resultado en partida.tirar:", resultado);
+  const valor = partida.tirar(dado);
+  
+  //Obtener y Actualizar la imagen correspondiente al resultado del dado
+   if (!imagenDado) imagenDado.src = dado.obtenerImagen(valor);
+  //console.log("resultado real del dado al lanzar", valor);
 
-      //Obtener y Actualizar la imagen correspondiente al resultado del dado
-      imagenDado.src = dado.obtenerImagen(resultado);
-      //console.log("resultado real del dado al lanzar", resultado);
+;
+ // Saber quién tiró
+   const jugadorActual =
+   partida.turno === 1 ? partida.jugador2 : partida.jugador1;
+   jugadorActual.tiradas.push(valor);
+   // Actualizar indicador de turno en pantalla
+    mensajeTurno.textContent = `Turno de 💛 ${jugadorActual.nombre}`;
+    
+   if (valor !== undefined) {
+    //resultado.textContent = `🎲 Salió ${valor}`;
+    resultado.textContent = (`🎲 ${partida.turno === 1 ? partida.jugador2.nombre : partida.jugador1.nombre} sacó un ${valor}`);
+    actualizarPantalla(partida);
+    actualizarHistorial(partida);
+  }
 
-      contadorTiradas++;
-      if (contador) contador.textContent = `🎰Tirada: ${contadorTiradas}`;
+  contadorTiradas++;
+   if (contador) contador.textContent = `🎰 Tiradas: ${contadorTiradas}`;
 
-      // Saber quién tiró
-      const jugadorActual =
-        partida.turno === 1 ? partida.jugador2 : partida.jugador1;
 
-      // Mostrar en pantalla el número de tirada
-
-      // Aumentar tirada del jugador correspondiente
-      if (jugadorActual.nombre === partida.jugador1.nombre) {
-        contadorTiradasJ1++;
-        if (contadorJ1) contadorJ1.textContent = `Tirada: ${contadorTiradasJ1}`;
-      } else if (jugadorActual.nombre === partida.jugador2.nombre) {
-        contadorTiradasJ2++;
-        if (contadorJ2)
-          contadorJ2.textContent = ` Tirada: ${contadorTiradasJ2}`;
-      }
-
-      // Mostrar el resultado de la tirada
-      mostrarMensaje(`🎲${jugadorActual.nombre} obtuvo un ${resultado}`);
-
-      // Actualizar indicador de turno en pantalla
-      mensajeTurno.textContent = `Turno de ${jugadorActual.nombre}`;
-
-      // Comparar puntajes y mostrar quién ganó o si empataron
-      const p1 = partida.jugador1.puntos;
-      const p2 = partida.jugador2.puntos;
-
-      if (p1 > p2) {
-        if (resultadoRonda)
-          resultadoRonda.textContent = `${partida.jugador1.nombre} ganó la ronda 🏆`;
-      } else if (p2 > p1) {
-        if (resultadoRonda)
-          resultadoRonda.textContent = `${partida.jugador2.nombre} ganó la ronda 🏆`;
-      } else {
-        if (resultadoRonda) resultadoRonda.textContent = `Empate 🤝`;
-      }
-
-      actualizarPantalla(partida);
-
-      const ganador = partida.ganadorFinal();
+  const ganador = partida.ganadorFinal();
       if (ganador) {
+        partida.terminada = true;
         mostrarMensaje("🎉 " + ganador.nombre + " ganó la partida");
+        guardarEstado(partida);
 
+        //deshabilitar boton Lanzar
+        btnLanzar.disabled = true;
+        btnLanzar.classList.add("dosabled");
+  
         if (typeof confetti === "function") {
           confetti({
             particleCount: 150,
@@ -273,26 +330,19 @@ document.addEventListener("DOMContentLoaded", function () {
           });
         }
 
-        // desactivo botón
-        boton.disabled = true;
+        return;
       }
+      // Mostrar turno siguiente
+      const siguiente = partida.turno === 1 ? partida.jugador1 : partida.jugador2;
+   /*    if (mensajeTurno) mensajeTurno.textContent = `Turno de ${siguiente.nombre}`; */
 
-      guardarEstado(partida);
-    });
-  }
+  });
 
-  // botón reiniciar (solo en batalla)
-  /*   const btnReiniciar = document.getElementById("btn-reiniciar");
-  if (btnReiniciar) {
-    btnReiniciar.addEventListener("click", function () {
-      localStorage.removeItem(CLAVE);
-      localStorage.removeItem("nombreJ1");
-      localStorage.removeItem("nombreJ2");
-      window.location.href = "index.html";
-    });
-  } */
 
-  // Obtenemos   elementos del DOM
+///=======FIN  LOGICA  BOTON TIRRAR================/
+
+///=======Inicio LOGICA BTN INICIAR SESION=========/
+// Obtenemos el elemento del DOM
   const btnReiniciar = document.getElementById("btn-reiniciar");
   if (btnReiniciar) {
     btnReiniciar.addEventListener("click", () => {
@@ -303,6 +353,10 @@ document.addEventListener("DOMContentLoaded", function () {
       partida.jugador1.ultimaTirada = null;
       partida.jugador2.ultimaTirada = null;
 
+      // Limpiar tiradas de cada jugador
+      partida.jugador1.tiradas = [];
+      partida.jugador2.tiradas = [];
+
       partida.jugador1.totalPuntos = 0;
       partida.jugador2.totalPuntos = 0;
 
@@ -310,31 +364,34 @@ document.addEventListener("DOMContentLoaded", function () {
       partida.jugador2.rondasGanadas = 0;
 
       // Reiniciar partida
+   
       partida.tiradas = 0;
       partida.turno = 1;
       partida.numRonda = 1;
       partida.historial = [];
       partida.terminada = false;
 
-      contadorTiradas = 0;
-      contadorTiradasJ1 = 0;
-      contadorTiradasJ2 = 0;
-      if (contadorJ1) contadorJ1.textContent = "";
-      if (contadorJ2) contadorJ2.textContent = "";
-      if (resultadoRonda) resultadoRonda.textContent = "";
-
+     
       // Limpiar pantalla
+      // Limpiar los textos de tiradas y puntos actuales
+      document.getElementById("tiradas-j1").textContent = "🎲 Aún no tiró.";
+      document.getElementById("tiradas-j2").textContent = "🎲 Aún no tiró.";
+
+      document.getElementById("puntos-j1").textContent = "0";
+      document.getElementById("puntos-j2").textContent = "0";
+
       document.getElementById("lista-historial").innerHTML = ""; //limpia el historial
+      document.getElementById("resultado-ronda").textContent = "";
       document.getElementById("mensaje-ronda").textContent = ""; //limpia mensaje del ganador
       document.getElementById("mensajeTurno").textContent =
         "Turno del jugador 1"; //vuelve al turno por default
-
+      
       document.getElementById("contador-tiradas").textContent = "";
 
       document.getElementById("dado-imagen").src = "assets/imgsDados/dado1.png"; // Limpia la imagen del dado
 
-      //  Volver a habilitar botón de tirar
-      boton.disabled = false;
+      // Volver a habilitar botón de tirar
+      btnLanzar.disabled = false;
 
       console.log(" Partida reiniciada correctamente");
 
@@ -344,19 +401,50 @@ document.addEventListener("DOMContentLoaded", function () {
 
     });
   }
-});
+///=======FIN LOGICA BTN REINICIAR SESION=========/
 
+
+///=======Inicio LOGICA BTN CERRAR SESION=========/
 // Obtenemos   elementos del DOM
 const botonCerrarSesion = document.getElementById("cerrarSesionBtn");
 if (botonCerrarSesion) {
-  // Cerrar sesión y borrar los datos de los jugadores
+  // Cerrar sesión y borrar los datos de los jugadores en localStorage
   botonCerrarSesion.addEventListener("click", () => {
+    console.log("Cerrando sesión…");
+ 
+   //  Evitar que se siga guardando estado
+   // sesionActiva = false;
+    
     localStorage.removeItem(CLAVE);
     localStorage.removeItem("nombreJ1");
-    localStorage.removeItem("nombreJ1");
+    localStorage.removeItem("nombreJ2");
+
+    //localStorage.setItem("sesionActiva", "false"); 
+   // console.log("SESION ACTIVA:", sesionActiva);
+    console.log("LOCALSTORAGE TRAS BORRAR:", JSON.stringify(localStorage));
+
+    console.log("ANTES DE BORRAR:", localStorage);
+    localStorage.clear();
+    console.log("despues DE BORRAR:", localStorage);
+
+    partida = null; //resetea la partida en memoria
+
+    const enlaceBatalla = document.getElementById("enlace-volverBatalla");
+
+    if (enlaceBatalla) {
+      enlaceBatalla.classList.add("disabled");
+      enlaceBatalla.style.pointerEvents = "none";
+      enlaceBatalla.style.opacity = "0.5";
+      enlaceBatalla.setAttribute("aria-disabled", "true");
+    }
+
+
     alert("Has cerrado sesión.");
     setTimeout(() => {
       window.location.href = "index.html"; //redirige al inicio
     }, 1000);
+
   });
 }
+///=======FIN LOGICA BTN CERRAR SESION=========/
+}})
